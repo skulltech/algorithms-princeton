@@ -10,9 +10,6 @@ public class QuickFindUF {
             id[i] = i;
     }
 
-    public static void main(String[] args) {
-    }
-
     public boolean connected(int p, int q) {
         return id[p] == id[q];
     }

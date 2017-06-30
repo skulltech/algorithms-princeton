@@ -10,9 +10,6 @@ public class QuickUnionUF {
             id[i] = i;
     }
 
-    public static void main(String[] args) {
-    }
-
     private int root(int i) {
         while (i != id[i])
             i = id[i];

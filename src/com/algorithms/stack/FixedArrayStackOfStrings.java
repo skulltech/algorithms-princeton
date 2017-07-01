@@ -1,12 +1,12 @@
 package com.algorithms.stack;
 
 
-public class ArrayStackOfStrings {
+public class FixedArrayStackOfStrings {
 
     private String[] stack;
     private int N = 0;
 
-    public ArrayStackOfStrings(int capacity) {
+    public FixedArrayStackOfStrings(int capacity) {
         stack = new String[capacity];
     }
 

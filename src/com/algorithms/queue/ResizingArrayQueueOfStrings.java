@@ -5,12 +5,20 @@ public class ResizingArrayQueueOfStrings {
 
     private String[] queue;
 
-    public ResizingArrayQueueOfStrings() {}
+    public ResizingArrayQueueOfStrings() {
+    }
 
-    public boolean isEmpty() {}
+    public boolean isEmpty() {
+        return true;
+    }
 
-    public void push(String item) {}
+    public void push(String item) {
+    }
 
-    public String pop() {}
+    public String pop() {
+        return null;
+    }
 
-    private void resize(int capacity) {}
+    private void resize(int capacity) {
+    }
+}

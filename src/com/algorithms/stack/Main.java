@@ -1,5 +1,6 @@
 package com.algorithms.stack;
 
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -7,7 +8,7 @@ import edu.princeton.cs.algs4.StdOut;
 public class Main {
 
     public static void main(String[] args) {
-        StackOfStrings stack = new StackOfStrings();
+        Stack<String> stack = new Stack<>();
 
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();

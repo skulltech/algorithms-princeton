@@ -61,7 +61,7 @@ public class Deque<Item> implements Iterable<Item> {
         if (isEmpty()) throw new NoSuchElementException();
         Item item = first.item;
         first = first.next;
-        size --;
+        size--;
 
         if (size == 0) last = first;
         else first.previous = null;

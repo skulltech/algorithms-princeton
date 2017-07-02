@@ -17,6 +17,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public int size() { return size; }
 
     public void enqueue(Item item) {
+        if (item == null) throw new IllegalArgumentException();
+
         queue[++last] = item;
         size++;
 
@@ -27,7 +29,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public Item dequeue() {
+        if (isEmpty()) throw new NoSuchElementException();
+
         int rand = StdRandom.uniform(last + 1);
+        while (queue[rand] == null) rand = StdRandom.uniform(last + 1);
+
         Item item = queue[rand];
         queue[rand] = null;
         size--;
@@ -37,7 +43,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return item;
     }
 
-    public Item sample() { return queue[StdRandom.uniform(last + 1)]; }
+    public Item sample() {
+        if (isEmpty()) throw new NoSuchElementException();
+
+        int rand = StdRandom.uniform(last + 1);
+        while (queue[rand] == null) rand = StdRandom.uniform(last + 1);
+
+        return queue[rand];
+    }
 
     private void defrag(int capacity) {
         Item[] copy = (Item[]) new Object[capacity];
@@ -46,6 +59,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (queue[i] != null) { copy[counter++] = queue[i]; }
         }
         queue = copy;
+        N = capacity;
+        last = counter - 1;
     }
 
     public Iterator<Item> iterator() { return new RandomizedQueueIterator(); }
@@ -59,17 +74,24 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             for (int i = 0; i < last + 1; i++) {
                 if (queue[i] != null) { items[count++] = queue[i]; }
             }
+
+            Item[] copy = (Item[]) new Object[count];
+            for (int i = 0; i < count; i++) copy[i] = items[i];
+            items = copy;
+            StdRandom.shuffle(items);
         }
 
-        public boolean hasNext() { return current != count-1; }
+        public boolean hasNext() { return current != count; }
 
         public void remove() { throw new UnsupportedOperationException(); }
 
         public Item next() {
-            if (isEmpty()) throw new NoSuchElementException();
+            if (!hasNext()) throw new NoSuchElementException();
             return items[current++];
         }
     }
 
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        /* put unit-tests here */
+    }
 }

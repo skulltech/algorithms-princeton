@@ -2,33 +2,28 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
 public class Percolation {
+
     private int length;
-    private int topVirtualNode;
-    private int bottomVirtualNode;
-    private int openSites;
+    private int topnode;
+    private int bottomnode;
+    private int openSites = 0;
 
     private WeightedQuickUnionUF uf;
-    private boolean isOpenRec[];
+    private boolean isOpenSite[];
 
 
     public Percolation(int n) {
         if (n <= 0) throw new IllegalArgumentException();
 
         uf = new WeightedQuickUnionUF((n * n) + 2);
-        isOpenRec = new boolean[(n * n) + 2];
+        isOpenSite = new boolean[(n * n) + 2];
         length = n;
-        topVirtualNode = n * n;
-        bottomVirtualNode = (n * n) + 1;
-        openSites = 0;
+        topnode = n * n;
+        bottomnode = (n * n) + 1;
 
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < i; j++) {
-                isOpenRec[index(i + 1, j + 1)] = false;
-            }
+            for (int j = 0; j < i; j++) isOpenSite[index(i + 1, j + 1)] = false;
         }
-    }
-
-    public static void main(String[] args) {
     }
 
     private int index(int row, int col) {
@@ -40,46 +35,46 @@ public class Percolation {
 
     public void open(int row, int col) {
         int site = index(row, col);
-        if (!isOpenRec[site]) {
-            isOpenRec[site] = true;
+        if (!isOpenSite[site]) {
+            isOpenSite[site] = true;
             openSites++;
         }
 
         try {
             int left = index(row, col - 1);
-            if (isOpenRec[left] && !uf.connected(site, left)) uf.union(site, left);
+            if (isOpenSite[left] && !uf.connected(site, left)) uf.union(site, left);
         } catch (IllegalArgumentException e) {
         }
 
         try {
             int right = index(row, col + 1);
-            if (isOpenRec[right] && !uf.connected(site, right)) uf.union(site, right);
+            if (isOpenSite[right] && !uf.connected(site, right)) uf.union(site, right);
         } catch (IllegalArgumentException e) {
         }
 
         try {
             int up = index(row - 1, col);
-            if (isOpenRec[up] && !uf.connected(site, up)) uf.union(site, up);
+            if (isOpenSite[up] && !uf.connected(site, up)) uf.union(site, up);
         } catch (IllegalArgumentException e) {
-            if (!uf.connected(site, topVirtualNode)) uf.union(site, topVirtualNode);
+            if (!uf.connected(site, topnode)) uf.union(site, topnode);
         }
 
         try {
             int down = index(row + 1, col);
-            if (isOpenRec[down] && !uf.connected(site, down)) uf.union(site, down);
+            if (isOpenSite[down] && !uf.connected(site, down)) uf.union(site, down);
         } catch (IllegalArgumentException e) {
-            if (!uf.connected(site, bottomVirtualNode)) uf.union(site, bottomVirtualNode);
+            if (!uf.connected(site, bottomnode)) uf.union(site, bottomnode);
         }
     }
 
     public boolean isOpen(int row, int col) {
         int site = index(row, col);
-        return isOpenRec[site];
+        return isOpenSite[site];
     }
 
     public boolean isFull(int row, int col) {
         int site = index(row, col);
-        return uf.connected(topVirtualNode, site);
+        return uf.connected(topnode, site);
     }
 
     public int numberOfOpenSites() {
@@ -87,6 +82,6 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return uf.connected(topVirtualNode, bottomVirtualNode);
+        return uf.connected(topnode, bottomnode);
     }
 }

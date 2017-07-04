@@ -1,20 +1,15 @@
 package com.algorithms.sorting;
 
 
-public class Merge {
-
-    private static void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
-        if (lo >= hi) return;
-
-        int mid = (lo + hi) / 2;
-        sort(a, aux, lo, mid);
-        sort(a, aux, mid + 1, hi);
-        merge(a, aux, lo, mid, hi);
-    }
+public class MergeBU {
 
     public static void sort(Comparable[] a) {
         Comparable[] aux = new Comparable[a.length];
-        sort(a, aux, 0, a.length - 1);
+        int N = a.length;
+
+        for (int size = 1; size < N; size = size*2) {
+            for (int i = 0; i < N; i = i + size) merge(a, aux, i, i+size-1, Math.min(i+size+size-1, N-1));
+        }
     }
 
     private static boolean less(Comparable v, Comparable w) {

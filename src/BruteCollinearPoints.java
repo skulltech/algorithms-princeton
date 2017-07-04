@@ -1,11 +1,15 @@
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
+
+import java.util.Arrays;
 
 
 public class BruteCollinearPoints {
 
     private LineSegment[] segments;
+    private Stack<LineSegment> segmentStack = new Stack<>();
 
     private static boolean collinear(Point[] points) {
         for (int p = 1; p < points.length - 1; p++) {
@@ -30,26 +34,33 @@ public class BruteCollinearPoints {
         return false;
     }
 
+    private static boolean contains(LineSegment[] a, LineSegment v) {
+        for (LineSegment i: a) if (i.toString().equals(v.toString())) return true;
+        return false;
+    }
+
     public BruteCollinearPoints(Point[] points) {
         if (points.equals(null) || hasDuplicate(points) || hasNull(points)) throw new IllegalArgumentException();
 
         int N = points.length;
 
-        int counter = 0;
-        LineSegment[] buffer = new LineSegment[N];
         for (int i = 0; i < N; i++) {
-            for (int j = i; j < N; j++) {
-                for (int k = j; k < N; k++) {
-                    for (int l = k; l < N; l++) {
+            for (int j = i+1; j < N; j++) {
+                for (int k = j+1; k < N; k++) {
+                    for (int l = k+1; l < N; l++) {
                         Point[] ps = {points[i], points[j], points[k], points[l]};
-                        if (collinear(ps)) buffer[counter++] = new LineSegment(points[i], points[l]);
+
+                        if (collinear(ps)) {
+                            Arrays.sort(ps);
+                            segmentStack.push(new LineSegment(ps[0], ps[3]));
+                        }
                     }
                 }
             }
         }
 
-        segments = new LineSegment[counter];
-        for (int i = 0; i < counter; i++) this.segments[i] = buffer[i];
+        segments = new LineSegment[segmentStack.size()];
+        for (int i = 0; i < segmentStack.size(); i++) this.segments[i] = segmentStack.pop();
     }
 
     public int numberOfSegments() { return this.segments.length; }

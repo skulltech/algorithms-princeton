@@ -113,7 +113,6 @@ public class Point implements Comparable<Point> {
         }
     }
 
-
     /**
      * Returns a string representation of this point.
      * This method is provide for debugging;

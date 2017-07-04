@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
+
 public class BruteCollinearPoints {
 
     private LineSegment[] segments;
@@ -15,7 +16,7 @@ public class BruteCollinearPoints {
 
     private static boolean hasDuplicate(Point[] points) {
         for (int i = 0; i < points.length; i++) {
-            for (int j = i; j < points.length; j++) {
+            for (int j = i+1; j < points.length; j++) {
                 if (points[i].compareTo(points[j]) == 0) return true;
             }
         }

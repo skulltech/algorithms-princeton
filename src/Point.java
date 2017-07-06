@@ -61,10 +61,12 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         double slope;
+        int cmp = this.compareTo(that);
 
-        if (this.compareTo(that) == 0) slope = Double.NEGATIVE_INFINITY;
+        if      (cmp == 0)         slope = Double.NEGATIVE_INFINITY;
         else if (this.x == that.x) slope = Double.POSITIVE_INFINITY;
-        else slope = (that.y - this.y) / (that.x - this.x);
+        else if (this.y == that.y) slope = +0.00;
+        else                       slope = (double) ((that.y - this.y) / (that.x - this.x));
 
         return slope;
     }
@@ -82,7 +84,7 @@ public class Point implements Comparable<Point> {
      *         argument point
      */
     public int compareTo(Point that) {
-        if (this.y < that.y)      return -1;
+        if      (this.y < that.y) return -1;
         else if (this.y > that.y) return +1;
         else if (this.x < that.x) return -1;
         else if (this.x > that.x) return +1;
@@ -107,7 +109,7 @@ public class Point implements Comparable<Point> {
         public int compare(Point v, Point w){
             double slopev = slopeTo(v), slopew = slopeTo(w);
 
-            if (slopev < slopew)      return -1;
+            if      (slopev < slopew) return -1;
             else if (slopev > slopew) return +1;
             else                      return 0;
         }

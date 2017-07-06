@@ -20,7 +20,7 @@ public class FastCollinearPoints {
     }
 
     private static boolean hasNull(Point[] points) {
-        for (int i = 0; i < points.length; i++) { if (points[i].equals(null)) return true; }
+        for (int i = 0; i < points.length; i++) { if (points[i] == null) return true; }
         return false;
     }
 
@@ -32,7 +32,7 @@ public class FastCollinearPoints {
     }
 
     public FastCollinearPoints(Point[] points) {
-        if (points.equals(null) || hasDuplicate(points) || hasNull(points)) throw new IllegalArgumentException();
+        if (points == null || hasDuplicate(points) || hasNull(points)) throw new IllegalArgumentException();
 
         Stack<LineSegment> segmentstack = new Stack<>();
         int N = points.length;
@@ -57,7 +57,7 @@ public class FastCollinearPoints {
 
     public int numberOfSegments() { return this.segments.length; }
 
-    public LineSegment[] segments() { return this.segments; }
+    public LineSegment[] segments() { return this.segments.clone(); }
 
     public static void main(String[] args) {
 

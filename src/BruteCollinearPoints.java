@@ -9,11 +9,11 @@ import java.util.Arrays;
 public class BruteCollinearPoints {
 
     private LineSegment[] segments;
-    private Stack<LineSegment> segmentStack = new Stack<>();
+    private Stack<LineSegment> segmentstack = new Stack<>();
 
     private static boolean collinear(Point[] points) {
-        for (int p = 1; p < points.length - 1; p++) {
-            if (points[0].slopeTo(points[p]) != points[0].slopeTo(points[p+1])) return false;
+        for (int p = 0; p < points.length - 2; p++) {
+            if (points[p].slopeTo(points[p+1]) != points[p+1].slopeTo(points[p+2])) return false;
         }
         return true;
     }
@@ -28,14 +28,7 @@ public class BruteCollinearPoints {
     }
 
     private static boolean hasNull(Point[] points) {
-        for (int i = 0; i < points.length; i++) {
-            if (points[i].equals(null)) return true;
-        }
-        return false;
-    }
-
-    private static boolean contains(LineSegment[] a, LineSegment v) {
-        for (LineSegment i: a) if (i.toString().equals(v.toString())) return true;
+        for (int i = 0; i < points.length; i++) { if (points[i].equals(null)) return true; }
         return false;
     }
 
@@ -44,23 +37,29 @@ public class BruteCollinearPoints {
 
         int N = points.length;
 
+
         for (int i = 0; i < N; i++) {
             for (int j = i+1; j < N; j++) {
                 for (int k = j+1; k < N; k++) {
                     for (int l = k+1; l < N; l++) {
                         Point[] ps = {points[i], points[j], points[k], points[l]};
-
-                        if (collinear(ps)) {
-                            Arrays.sort(ps);
-                            segmentStack.push(new LineSegment(ps[0], ps[3]));
-                        }
+                        Arrays.sort(ps);
+                        if (isSorted(ps) && collinear(ps)) segmentstack.push(new LineSegment(ps[0], ps[3]));
                     }
                 }
             }
         }
 
-        segments = new LineSegment[segmentStack.size()];
-        for (int i = 0; i < segmentStack.size(); i++) this.segments[i] = segmentStack.pop();
+        int size = segmentstack.size();
+        segments = new LineSegment[size];
+        for (int i = 0; i < size; i++) this.segments[i] = segmentstack.pop();
+    }
+
+    private static boolean isSorted(Comparable[] a) {
+        for (int i = 0; i < a.length-1; i ++) {
+            if (a[i].compareTo(a[i+1]) > 0) return false;
+        }
+        return true;
     }
 
     public int numberOfSegments() { return this.segments.length; }
@@ -68,6 +67,7 @@ public class BruteCollinearPoints {
     public LineSegment[] segments() { return this.segments; }
 
     public static void main(String[] args) {
+
 
         // read the n points from a file
         In in = new In(args[0]);

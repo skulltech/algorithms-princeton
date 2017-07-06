@@ -28,8 +28,8 @@ public class FastCollinearPoints {
     }
 
     private static boolean collinear(Point[] points) {
-        for (int p = 0; p < points.length - 2; p++) {
-            if (points[p].slopeTo(points[p + 1]) != points[p + 1].slopeTo(points[p + 2])) return false;
+        for (int p = 1; p < points.length - 1; p++) {
+            if (points[0].slopeTo(points[p]) != points[0].slopeTo(points[p+1])) return false;
         }
         return true;
     }
@@ -40,17 +40,15 @@ public class FastCollinearPoints {
         Stack<Point[]> segmentstack = new Stack<>();
         int N = points.length;
         Arrays.sort(points);
+        Point[] basePoints = points.clone();
 
-        for (Point base : points) {
+        for (Point base : basePoints) {
             Comparator<Point> slopeorder = base.slopeOrder();
-
             Arrays.sort(points, slopeorder);
 
-            for (int j = 0; j < N; j++) {
+            for (int j = 1; j < N; j++) {
                 int c = 1;
-                while (j + c < N && collinear(new Point[]{base, points[j], points[j + c]})) {
-                    c++;
-                }
+                while (j + c < N && collinear(new Point[]{base, points[j], points[j + c]})) { c++; }
                 if (c > 2) {
                     segmentstack.push(new Point[]{base, points[j + c - 1]});
                 }

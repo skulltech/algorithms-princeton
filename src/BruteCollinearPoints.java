@@ -20,7 +20,7 @@ public class BruteCollinearPoints {
     private static boolean hasDuplicate(Point[] points) {
         for (int i = 0; i < points.length; i++) {
             for (int j = i+1; j < points.length; j++) {
-                if (points[i].compareTo(points[j]) == 0) return true;
+                if (points[i].<Point>compareTo(points[j]) == 0) return true;
             }
         }
         return false;

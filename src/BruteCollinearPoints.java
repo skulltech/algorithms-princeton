@@ -9,7 +9,6 @@ import java.util.Arrays;
 public class BruteCollinearPoints {
 
     private LineSegment[] segments;
-    private Stack<LineSegment> segmentstack = new Stack<>();
 
     private static boolean collinear(Point[] points) {
         for (int p = 0; p < points.length - 2; p++) {
@@ -35,8 +34,8 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] points) {
         if (points.equals(null) || hasDuplicate(points) || hasNull(points)) throw new IllegalArgumentException();
 
+        Stack<LineSegment> segmentstack = new Stack<>();
         int N = points.length;
-
 
         for (int i = 0; i < N; i++) {
             for (int j = i+1; j < N; j++) {

@@ -32,7 +32,7 @@ public class BruteCollinearPoints {
     }
 
     public BruteCollinearPoints(Point[] points) {
-        if (points == null || hasDuplicate(points) || hasNull(points)) throw new IllegalArgumentException();
+        if (points == null || hasNull(points) || hasDuplicate(points)) throw new IllegalArgumentException();
 
         Stack<LineSegment> segmentstack = new Stack<>();
         int N = points.length;
@@ -60,7 +60,6 @@ public class BruteCollinearPoints {
     public LineSegment[] segments() { return this.segments.clone(); }
 
     public static void main(String[] args) {
-
 
         // read the n points from a file
         In in = new In(args[0]);

@@ -32,7 +32,7 @@ public class FastCollinearPoints {
     }
 
     public FastCollinearPoints(Point[] points) {
-        if (points == null || hasDuplicate(points) || hasNull(points)) throw new IllegalArgumentException();
+        if (points == null || hasNull(points) || hasDuplicate(points)) throw new IllegalArgumentException();
 
         Stack<LineSegment> segmentstack = new Stack<>();
         int N = points.length;

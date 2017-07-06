@@ -6,13 +6,14 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 import java.util.Comparator;
 
+
 public class FastCollinearPoints {
 
     private LineSegment[] segments;
 
     private static boolean hasDuplicate(Point[] points) {
         for (int i = 0; i < points.length; i++) {
-            for (int j = i+1; j < points.length; j++) {
+            for (int j = i + 1; j < points.length; j++) {
                 if (points[i].compareTo(points[j]) == 0) return true;
             }
         }
@@ -20,13 +21,15 @@ public class FastCollinearPoints {
     }
 
     private static boolean hasNull(Point[] points) {
-        for (int i = 0; i < points.length; i++) { if (points[i] == null) return true; }
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) return true;
+        }
         return false;
     }
 
     private static boolean collinear(Point[] points) {
         for (int p = 0; p < points.length - 2; p++) {
-            if (points[p].slopeTo(points[p+1]) != points[p+1].slopeTo(points[p+2])) return false;
+            if (points[p].slopeTo(points[p + 1]) != points[p + 1].slopeTo(points[p + 2])) return false;
         }
         return true;
     }
@@ -34,30 +37,91 @@ public class FastCollinearPoints {
     public FastCollinearPoints(Point[] points) {
         if (points == null || hasNull(points) || hasDuplicate(points)) throw new IllegalArgumentException();
 
-        Stack<LineSegment> segmentstack = new Stack<>();
+        Stack<Point[]> segmentstack = new Stack<>();
         int N = points.length;
         Arrays.sort(points);
 
-        for (Point base: points) {
+        for (Point base : points) {
             Comparator<Point> slopeorder = base.slopeOrder();
 
             Arrays.sort(points, slopeorder);
 
             for (int j = 0; j < N; j++) {
                 int c = 1;
-                while (j+c < N && collinear(new Point[]{base, points[j], points[j + c]})) c++;
-                if (c>2) segmentstack.push(new LineSegment(base, points[j+c-1]));
+                while (j + c < N && collinear(new Point[]{base, points[j], points[j + c]})) {
+                    c++;
+                }
+                if (c > 2) {
+                    segmentstack.push(new Point[]{base, points[j + c - 1]});
+                }
             }
         }
 
         int size = segmentstack.size();
-        segments = new LineSegment[size];
-        for (int i = 0; i < size; i++) this.segments[i] = segmentstack.pop();
+        Point[][] segments = new Point[size][2];
+        for (int i = 0; i < size; i++) segments[i] = segmentstack.pop();
+
+        this.segments = filterSegments(segments);
     }
 
-    public int numberOfSegments() { return this.segments.length; }
+    private static LineSegment[] createSegments(Point[][] segments) {
+        int N = segments.length;
+        LineSegment[] created = new LineSegment[N];
 
-    public LineSegment[] segments() { return this.segments.clone(); }
+        for (int i = 0; i < N; i++) created[i] = new LineSegment(segments[i][0], segments[i][1]);
+        return created;
+    }
+
+    private static LineSegment[] filterSegments(Point[][] segments) {
+        Stack<LineSegment> filtered = new Stack<>();
+        int N = segments.length;
+
+        for (int i = 0, c = 0; i < N; i++, c = 0) {
+            Point[] cur = segments[i], comp, longest = cur;
+            if (cur == null) { continue; }
+
+            while (c < N) {
+                comp = segments[c];
+
+                if (comp != null && isSame(cur, comp)) {
+                    Point[] ps = {longest[0], longest[1], comp[0], comp[1]};
+                    Arrays.sort(ps);
+                    if(longest[0] != ps[0] || longest[1] != ps[3]) longest = new Point[] {ps[0], ps[3]};
+                    segments[c] = null;
+                }
+
+                c++;
+            }
+            segments[i] = null;
+            filtered.push(new LineSegment(longest[0], longest[1]));
+        }
+
+        int size = filtered.size();
+        LineSegment[] maximals = new LineSegment[size];
+        for (int i = 0; i < size; i++) maximals[i] = filtered.pop();
+        return maximals;
+    }
+
+    private static boolean isSame(Point[] v, Point[] w) {
+        if      (abs(v[0].slopeTo(v[1])) != abs(w[0].slopeTo(w[1])))           return false;
+        else if (v[0] == w[0] || v[1] == w[1] || v[0] == w[1] || v[1] == w[0]) return true;
+        else if (v[0].slopeTo(w[0]) != v[0].slopeTo(w[1]))                     return false;
+
+        return true;
+    }
+
+    private static double abs(double a) {
+        if (a > +0.00) return +a;
+        else           return -a;
+    }
+
+    public int numberOfSegments() {
+        return this.segments.length;
+    }
+
+    public LineSegment[] segments() {
+        return this.segments.clone();
+    }
 
     public static void main(String[] args) {
 

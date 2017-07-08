@@ -4,7 +4,7 @@ import edu.princeton.cs.algs4.StdRandom;
 import java.util.Iterator;
 
 
-public class Board {
+public class Board implements Comparable<Board>{
 
     private int[][] blocks;
     private int N;
@@ -25,6 +25,16 @@ public class Board {
     public int dimension() { return N; }
 
     public int manhattan() { return this.manhattan; }
+
+    public int compareTo(Board that) {
+        int cmp;
+
+        if      (this.manhattan > that.manhattan) cmp = -1;
+        else if (this.manhattan < that.manhattan) cmp = +1;
+        else                                      cmp =  0;
+
+        return cmp;
+    }
 
     public int hamming() { return this.hamming; }
 

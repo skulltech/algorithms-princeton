@@ -7,8 +7,6 @@ public class Solver {
 
     public Solver(Board initial) {
         if (initial == null) throw new IllegalArgumentException();
-
-
     }
 
     public boolean isSolvable() { return this.isSolvable; }

@@ -8,33 +8,45 @@ public class Board {
 
     private int[][] blocks;
     private int N;
+    private int hamming;
+    private int manhattan;
+    private boolean isGoal;
+
 
     public Board(int[][] blocks) {
         this.blocks = blocks;
         this.N = blocks.length;
+
+        calculateHamming();;
+        calculateManhattan();
+        this.isGoal = ifGoal();
     }
 
     public int dimension() { return N; }
 
-    public int hamming() {
+    public int manhattan() { return this.manhattan; }
+
+    public int hamming() { return this.hamming; }
+
+    private void calculateHamming() {
         int count = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (this.blocks[i][j] != ((i*N + j + 1) % N*N)) count++;
+                if (this.blocks[i][j] != (i*N + j + 1) && i*j != 0) count++;
             }
         }
-        return count;
+        hamming = count;
     }
 
-    public int manhattan() {
+    private void calculateManhattan() {
         int dist = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int val = blocks[i][j];
-                dist = dist + mod((val/3) - i) + mod((val%3) - j);
+                if (val != 0) dist = dist + mod((val/3) - i) + mod((val%3) - j);
             }
         }
-        return dist;
+        manhattan = dist;
     }
 
     private int mod(int v) {
@@ -42,7 +54,7 @@ public class Board {
         else       return -v;
     }
 
-    public boolean isGoal() {
+    private boolean ifGoal() {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (this.blocks[i][j] != ((i*N + j) % N*N)) return false;
@@ -50,6 +62,8 @@ public class Board {
         }
         return true;
     }
+
+    public boolean isGoal() { return this.isGoal; }
 
     public Board twin() { return new Board(exchrnd(blocks, N)); }
 

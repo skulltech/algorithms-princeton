@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -15,30 +16,39 @@ public class Solver {
     public Solver(Board initial) {
         if (initial == null) throw new IllegalArgumentException();
 
-        MinPQ<Board> pq = new MinPQ<>();
+        MinPQ<Board> pq = new MinPQ<>(new ManhattanComparator());
         pq.insert(initial);
 
         Board twin = initial.twin();
-        MinPQ<Board> twinpq = new MinPQ<>();
-        twinpq.insert(twin);
+        MinPQ<Board> tpq = new MinPQ<>(new ManhattanComparator());
+        tpq.insert(twin);
 
-        Board search = initial, twinsearch = twin;
-        while(!search.isGoal() || !twinsearch.isGoal()) {
+        Board search = initial, tsearch = twin;
+        while(!search.isGoal() || !tsearch.isGoal()) {
             search = pq.delMin();
-            twinsearch = twinpq.delMin();
+            tsearch = tpq.delMin();
             solution.push(search);
             moves = moves + 1;
 
             for (Board neighbor: search.neighbors()) {
                 if (!search.equals(neighbor)) pq.insert(neighbor);
             }
-            for (Board twinneighbor: twinsearch.neighbors()) {
-                if (!twinsearch.equals(twinneighbor)) twinpq.insert(twinneighbor);
+            for (Board tneighbor: tsearch.neighbors()) {
+                if (!tsearch.equals(tneighbor)) tpq.insert(tneighbor);
             }
         }
 
         if (search.isGoal()) isSolvable = true;
         else                 isSolvable = false;
+    }
+
+    private class ManhattanComparator implements Comparator<Board> {
+
+        public int compare(Board v, Board w) {
+            if      (v.manhattan() < w.manhattan()) return -1;
+            else if (v.manhattan() < w.manhattan()) return +1;
+            else                                    return  0;
+        }
     }
 
     public boolean isSolvable() { return this.isSolvable; }

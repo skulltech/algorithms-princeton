@@ -1,13 +1,14 @@
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
-import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Iterator;
 
 
-public class Board implements Comparable<Board>{
+public class Board {
 
-    private int[][] blocks;
-    private int N;
+    private final int[][] blocks;
+    private final int N;
     private int hamming;
     private int manhattan;
     private boolean isGoal;
@@ -26,23 +27,14 @@ public class Board implements Comparable<Board>{
 
     public int manhattan() { return this.manhattan; }
 
-    public int compareTo(Board that) {
-        int cmp;
-
-        if      (this.manhattan > that.manhattan) cmp = -1;
-        else if (this.manhattan < that.manhattan) cmp = +1;
-        else                                      cmp =  0;
-
-        return cmp;
-    }
-
     public int hamming() { return this.hamming; }
 
     private void calculateHamming() {
         int count = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (this.blocks[i][j] != (i*N + j + 1) && i*j != 0) count++;
+                int val = this.blocks[i][j];
+                if (val != (i*N + j + 1) && val != 0) count++;
             }
         }
         hamming = count;
@@ -53,7 +45,7 @@ public class Board implements Comparable<Board>{
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int val = blocks[i][j];
-                if (val != 0) dist = dist + mod((val/3) - i) + mod((val%3) - j);
+                if (val != 0) dist = dist + mod(((val-1)/N) - i) + mod(((val-1)%N) - j);
             }
         }
         manhattan = dist;
@@ -67,7 +59,7 @@ public class Board implements Comparable<Board>{
     private boolean ifGoal() {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (this.blocks[i][j] != ((i*N + j) % N*N)) return false;
+                if (this.blocks[i][j] != ((i*N + j + 1) % (N*N))) return false;
             }
         }
         return true;
@@ -78,30 +70,65 @@ public class Board implements Comparable<Board>{
     public Board twin() { return new Board(exchrnd(blocks, N)); }
 
     private static int[][] exchrnd(int[][] input, int N) {
-        int[][] blocks = input.clone();
+        int fi = 0, fj = 0;
+        loop:
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (input[i][j] != 0) {
+                    fi = i;
+                    fj = j;
+                    break loop;
+                }
+            }
+        }
 
-        int i = StdRandom.uniform(N), j = StdRandom.uniform(N);
-        int swap = blocks[i][j];
-        blocks[i][j] = blocks[j][i];
-        blocks[j][i] = swap;
+        int si = N-1, sj = N-1;
+        loop:
+        for (int i = N-1; i >= 0; i--) {
+            for (int j = N-1; j >= 0; j--) {
+                if (input[i][j] != 0 && i != fi && j != fj) {
+                    si = i;
+                    sj = j;
+                    break loop;
+                }
+            }
+        }
 
-        return blocks;
+        return exch(input, fi, fj, si, sj);
     }
 
     private static int[][] exch(int[][] input, int fi, int fj, int si, int sj) {
-        int[][] output = input.clone();
+        int[][] exchd = copy(input);
 
-        int swap = input[fi][fj];
-        input[fi][fj] = input[si][sj];
-        input[si][sj] = swap;
+        int swap = exchd[fi][fj];
+        exchd[fi][fj] = exchd[si][sj];
+        exchd[si][sj] = swap;
 
+        return exchd;
+    }
+
+    private static int[][] copy(int[][] a) {
+        int N = a.length;
+        int[][] output = new int[N][N];
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) output[i][j] = a[i][j];
+        }
         return output;
     }
 
-    public boolean equals(Board that) {
+    public boolean equals(Object that) {
+        if (that == null) return false;
+
+        Board cmp;
+        try { cmp = (Board) that; }
+        catch (ClassCastException e) { return false; }
+
+        if (cmp.dimension() != this.dimension()) return false;
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j< N; j++) {
-                if (this.blocks[i][j] != that.blocks[i][j]) return false;
+                if (this.blocks[i][j] != cmp.blocks[i][j]) return false;
             }
         }
         return true;
@@ -111,7 +138,7 @@ public class Board implements Comparable<Board>{
 
     private class Neighbors implements  Iterable<Board> {
         private int[][] base;
-        private Stack<Board> neighbors;
+        private Stack<Board> neighbors = new Stack<>();
 
         public Neighbors(int[][] base) {
             this.base = base;
@@ -124,15 +151,15 @@ public class Board implements Comparable<Board>{
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
                     if (base[i][j] == 0) {
-                        bi = j;
+                        bi = i;
                         bj = j;
                     }
                 }
             }
 
             int[][] a = {{bi-1, bj}, {bi+1, bj}, {bi, bj-1}, {bi, bj+1}};
-            for (int[] crdnt: a) {
-                try { neighbors.push(new Board(exch(base, bi, bj, crdnt[0], crdnt[1]))); }
+            for (int i = 0; i < a.length; i++) {
+                try { neighbors.push(new Board(exch(base, bi, bj, a[i][0], a[i][1]))); }
                 catch (IndexOutOfBoundsException e) { /* Do nothing. */ }
             }
         }
@@ -150,17 +177,40 @@ public class Board implements Comparable<Board>{
     }
 
     public String toString() {
-        String rep = Integer.toString(N);
+        String rep = Integer.toString(N) + System.lineSeparator();
+        int digits = 1, n = N;
+        /*
+        while (n > 9) {
+            digits++;
+            n = n / 10;
+        }
+        */
 
         for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) { rep.concat(' ' + Integer.toString(blocks[i][j])); }
-            rep.concat(System.lineSeparator());
+            for (int j = 0; j < N; j++) {
+                for (int k = 0; k < digits; k++) rep = rep.concat(" ");
+                rep = rep.concat(Integer.toString(blocks[i][j])); }
+            rep = rep.concat(System.lineSeparator());
         }
 
         return rep;
     }
 
     public static void main(String[] args) {
+
+        // create initial board from file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        int[][] blocks = new int[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                blocks[i][j] = in.readInt();
+        Board initial = new Board(blocks);
+        initial = new Board(new int[][] {{0, 1}, {2, 3}});
+        StdOut.println(initial.twin());
+        /*for (Board b: initial.neighbors()) {
+            StdOut.println(b);
+        }*/
     }
 
 }

@@ -121,8 +121,8 @@ public class Board {
         if (that == null) return false;
 
         Board cmp;
-        try { cmp = (Board) that; }
-        catch (ClassCastException e) { return false; }
+        try                          { cmp = (Board) that; }
+        catch (ClassCastException e) { return false;       }
 
         if (cmp.dimension() != this.dimension()) return false;
 

@@ -8,8 +8,8 @@ import java.util.Stack;
 
 public class Solver {
 
-    private int moves;
-    private boolean isSolvable;
+    private final int moves;
+    private final boolean isSolvable;
     private Stack<Board> solution = new Stack<>();
 
     public Solver(Board initial) {
@@ -22,26 +22,38 @@ public class Solver {
         MinPQ<SearchNode> tpq = new MinPQ<>();
         tpq.insert(new SearchNode(twin, 0, null));
 
-        SearchNode finl = solve(pq, tpq);
-
-        if (isSolvable) {
-            this.moves = finl.moves;
-            buildSolution(finl);
-        }
-        else {
-            this.moves = -1;
-        }
+        SolutionObj sol = solve(pq, tpq);
+        this.moves = sol.moves;
+        this.isSolvable = sol.isSolvable;
+        this.solution = buildSolution(sol.solution);
     }
 
-    private void buildSolution(SearchNode finl) {
+    private Stack<Board> buildSolution(SearchNode finl) {
+        Stack<Board> sol = new Stack<>();
+
         while (finl.previous != null) {
-            solution.push(finl.board);
+            sol.push(finl.board);
             finl = finl.previous;
         }
-        solution.push(finl.board);
+        sol.push(finl.board);
+
+        return sol;
     }
 
-    private SearchNode solve(MinPQ<SearchNode> pq, MinPQ<SearchNode> tpq) {
+    private class SolutionObj {
+
+        public final SearchNode solution;
+        public final int moves;
+        public final boolean isSolvable;
+
+        private SolutionObj(SearchNode solution, int moves, boolean isSolvable) {
+            this.moves = moves;
+            this.isSolvable = isSolvable;
+            this.solution = solution;
+        }
+    }
+
+    private SolutionObj solve(MinPQ<SearchNode> pq, MinPQ<SearchNode> tpq) {
         SearchNode node = pq.min(), tnode = pq.min();
 
         while(!node.board.isGoal() || !tnode.board.isGoal()) {
@@ -49,31 +61,24 @@ public class Solver {
             tnode = tpq.delMin();
 
             for (Board neighbor: node.board.neighbors()) {
-                if (node.previous == null || !node.previous.board.equals(neighbor))
-                    if (neighbor.isGoal()) {
-                        isSolvable = true;
-                        return new SearchNode(neighbor, node.moves+1, node);
-                    }
+                if (neighbor.isGoal()) {
+                    node = new SearchNode(neighbor, node.moves+1, node);
+                    return new SolutionObj(node, node.moves, true);
+                }
+                else if (node.previous == null || !node.previous.board.equals(neighbor))
                     pq.insert(new SearchNode(neighbor, node.moves+1, node));
             }
             for (Board tneighbor: tnode.board.neighbors()) {
-                if (tnode.previous == null || !tnode.previous.board.equals(tneighbor))
-                    if (tneighbor.isGoal()) {
-                        isSolvable = false;
-                        return new SearchNode(tneighbor, tnode.moves+1, tnode);
-                    }
+                if (tneighbor.isGoal()) {
+                    return new SolutionObj(null, -1, false);
+                }
+                else if (tnode.previous == null || !tnode.previous.board.equals(tneighbor))
                     tpq.insert(new SearchNode(tneighbor, tnode.moves+1, tnode));
             }
         }
 
-        if (node.board.isGoal()) {
-            isSolvable = true;
-            return node;
-        }
-        else {
-            isSolvable = false;
-            return tnode;
-        }
+        if (node.board.isGoal()) { return new SolutionObj(node, node.moves, true); }
+        else                     { return new SolutionObj(null, -1, false); }
     }
 
     private class SearchNode implements Comparable<SearchNode>{

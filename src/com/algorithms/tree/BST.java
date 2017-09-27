@@ -8,6 +8,7 @@ public class BST<Key extends Comparable<Key>, Value> {
         private Key key;
         private Value val;
         private Node left, right;
+
         public Node(Key key, Value val) {
             this.key = key;
             this.val = val;
@@ -40,7 +41,7 @@ public class BST<Key extends Comparable<Key>, Value> {
         return null;
     }
 
-    public void delete(Key key) {}
+    /* public void delete(Key key) {} */
 
-    public Iterable<Key> iterator() {}
+    /* public Iterable<Key> iterator() {} */
 }

@@ -57,6 +57,8 @@ public class KdTree {
     }
 
     private void draw(Node node) {
+        if (node==null) return;
+
         this.draw(node.left);
         node.point.draw();
         this.draw(node.right);

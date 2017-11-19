@@ -1,4 +1,7 @@
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.RectHV;
+
+import java.util.ArrayList;
 
 
 public class KdTree {
@@ -19,6 +22,13 @@ public class KdTree {
             if      ((x && p.x() < point.x()) || (!x && p.y() < point.y())) { return -1; }
             else if ((x && p.x() > point.x()) || (!x && p.y() > point.y())) { return  1; }
             else                                                            { return  0; }
+        }
+
+        private int compare(RectHV rect) {
+            if      (rect.contains(this.point))                                         { return  0; }
+            else if ((x && rect.ymax() < point.x()) || (!x && rect.xmax() < point.x())) { return -1; }
+            else if ((x && rect.ymin() > point.x()) || (!x && rect.xmin() > point.x())) { return  1; }
+            else                                                                        { return  0; }
         }
     }
 
@@ -66,6 +76,27 @@ public class KdTree {
 
     public void draw() { this.draw(this.root); }
 
+    private void range(ArrayList<Point2D> list, Node node, RectHV rect) {
+        if (node==null) return;
+        int cmp = node.compare(rect);
+
+        if      (cmp > 0) { range(list, node.right, rect); }
+        else if (cmp < 0) { range(list, node.left,  rect); }
+        else {
+            range(list, node.left, rect);
+            list.add(node.point);
+            range(list, node.right, rect);
+        }
+    }
+
+    public Iterable<Point2D> range(RectHV rect) {
+        if (rect==null) { throw new IllegalArgumentException(); }
+
+        ArrayList<Point2D> it = new ArrayList<>();
+        this.range(it, this.root, rect);
+        return it;
+    }
+
     public static void main(String[] args) {
         KdTree kdt = new KdTree();
 
@@ -83,5 +114,8 @@ public class KdTree {
         System.out.println(kdt.contains(new Point2D(4.6, 3.0)));
         System.out.println(kdt.contains(new Point2D(3.5, 9.0)));
         System.out.println(kdt.contains(new Point2D(-1.0, 20.0)));
+
+        RectHV rect = new RectHV(-5, -2, 10, 10);
+        System.out.println(kdt.range(rect));
     }
 }

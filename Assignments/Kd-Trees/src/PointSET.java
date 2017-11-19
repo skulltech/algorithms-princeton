@@ -19,7 +19,7 @@ public class PointSET {
         for (Point2D p: set) { p.draw(); }
     }
 
-    public Iterable<Point2D> range(RectHV rect) throws IllegalArgumentException {
+    public Iterable<Point2D> range(RectHV rect) {
         if (rect==null) { throw new IllegalArgumentException(); }
 
         ArrayList<Point2D> it = new ArrayList<>();

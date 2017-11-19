@@ -15,7 +15,9 @@ public class PointSET {
         else         { throw new IllegalArgumentException(); }
     }
     public boolean contains(Point2D p) { return set.contains(p); }
-    public void draw() {}
+    public void draw() {
+        for (Point2D p: set) { p.draw(); }
+    }
 
     public Iterable<Point2D> range(RectHV rect) throws IllegalArgumentException {
         if (rect==null) { throw new IllegalArgumentException(); }

@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
@@ -122,7 +121,6 @@ public class KdTree {
         }
     }
 
-
     public Point2D nearest(Point2D p) {
         if (isEmpty()) { return null; }
         return this.nearest(this.root, new Champion(this.root.point, Double.POSITIVE_INFINITY), p).point;
@@ -140,10 +138,6 @@ public class KdTree {
         int cmp = node.compare(p);
         if (cmp < 0) {
             champ = nearest(node.left, champ, p);
-//            System.out.println(node.point);
-//            System.out.println(p);
-//            System.out.println(node.verticalDist(p));
-//            System.out.println(champ.distance);
             if (node.verticalDist(p) < champ.distance) {
                 champ = nearest(node.right, champ, p);
             }
@@ -155,40 +149,5 @@ public class KdTree {
         return champ;
     }
 
-    public static void main(String[] args) {
-        KdTree kdt = new KdTree();
-        PointSET ps = new PointSET();
-
-        String filename = "input10.txt";
-        In in = new In(filename);
-        KdTree kdtree = new KdTree();
-        while (!in.isEmpty()) {
-            double x = in.readDouble();
-            double y = in.readDouble();
-            Point2D p = new Point2D(x, y);
-            kdtree.insert(p);
-            ps.insert(p);
-        }
-
-        System.out.println(kdtree.nearest(new Point2D(.9, .5)));
-        System.out.println(ps.nearest(new Point2D(.9, .5)));
-
-/*        kdt.insert(new Point2D(1.0, 2.0));
-        kdt.insert(new Point2D(15.0, 7.0));
-        kdt.insert(new Point2D(7.0, 12.0));
-        kdt.insert(new Point2D(4.0, 3.0));
-        kdt.insert(new Point2D(3.0, 9.0));
-        kdt.insert(new Point2D(-1.0, 20.0));
-
-        System.out.println(kdt.size());
-        System.out.println(kdt.contains(new Point2D(1.0, 2.0)));
-        System.out.println(kdt.contains(new Point2D(14.0, 7.0)));
-        System.out.println(kdt.contains(new Point2D(7.0, 12.0)));
-        System.out.println(kdt.contains(new Point2D(4.2, 3.0)));
-        System.out.println(kdt.contains(new Point2D(3.0, 9.0)));
-        System.out.println(kdt.contains(new Point2D(-1.0, 20.0)));
-
-        RectHV rect = new RectHV(-5, -2, 10, 10);
-        System.out.println(kdt.range(rect));*/
-    }
+    public static void main(String[] args) { ; }
 }

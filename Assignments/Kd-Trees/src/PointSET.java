@@ -10,7 +10,7 @@ public class PointSET {
 
     public boolean isEmpty() { return set.isEmpty(); }
     public int size() { return set.size(); }
-    public void insert(Point2D p) throws IllegalArgumentException {
+    public void insert(Point2D p) {
         if (p!=null) { set.add(p); }
         else         { throw new IllegalArgumentException(); }
     }

@@ -41,8 +41,8 @@ public class KdTree {
         }
 
         private double verticalDist(Point2D p) {
-            if (vertical) { return Math.abs(p.y() - point.y()); }
-            else          { return Math.abs(p.x() - point.x()); }
+            if (vertical) { return Math.abs(p.x() - point.x()); }
+            else          { return Math.abs(p.y() - point.y()); }
         }
     }
 
@@ -92,6 +92,7 @@ public class KdTree {
 
     private void range(ArrayList<Point2D> list, Node node, RectHV rect) {
         if (node==null) return;
+
         int cmp = node.compare(rect);
 
         if      (cmp > 0) { range(list, node.right, rect); }
@@ -123,6 +124,7 @@ public class KdTree {
 
 
     public Point2D nearest(Point2D p) {
+        if (isEmpty()) { return null; }
         return this.nearest(this.root, new Champion(this.root.point, Double.POSITIVE_INFINITY), p).point;
     }
 
@@ -138,7 +140,13 @@ public class KdTree {
         int cmp = node.compare(p);
         if (cmp < 0) {
             champ = nearest(node.left, champ, p);
-            if (node.verticalDist(p) < champ.distance) { champ = nearest(node.right, champ, p); }
+//            System.out.println(node.point);
+//            System.out.println(p);
+//            System.out.println(node.verticalDist(p));
+//            System.out.println(champ.distance);
+            if (node.verticalDist(p) < champ.distance) {
+                champ = nearest(node.right, champ, p);
+            }
         }
         else if (cmp > 0) {
             champ = nearest(node.right, champ, p);
@@ -149,6 +157,7 @@ public class KdTree {
 
     public static void main(String[] args) {
         KdTree kdt = new KdTree();
+        PointSET ps = new PointSET();
 
         String filename = "input10.txt";
         In in = new In(filename);
@@ -158,9 +167,11 @@ public class KdTree {
             double y = in.readDouble();
             Point2D p = new Point2D(x, y);
             kdtree.insert(p);
+            ps.insert(p);
         }
 
-        System.out.println(kdtree.nearest(new Point2D(20, 20)));
+        System.out.println(kdtree.nearest(new Point2D(.9, .5)));
+        System.out.println(ps.nearest(new Point2D(.9, .5)));
 
 /*        kdt.insert(new Point2D(1.0, 2.0));
         kdt.insert(new Point2D(15.0, 7.0));
